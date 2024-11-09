@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SingleResponsibilityPrinciple.Contracts;
 
-
 public class URLAsyncProvider : ITradeDataProvider
 {
     private readonly ITradeDataProvider _baseProvider;
@@ -12,12 +11,12 @@ public class URLAsyncProvider : ITradeDataProvider
         _baseProvider = baseProvider;
     }
 
-    public IEnumerable<string> GetTradeData()
+    public async IAsyncEnumerable<string> GetTradeDataAsync()
     {
-        // Run the base provider's GetTradeData asynchronously
-        Task<IEnumerable<string>> task = Task.Run(() => _baseProvider.GetTradeData());
-
-        // Wait for the task to complete and return the result
-        return task.Result;
+        // Use await foreach to get each item asynchronously from the base provider
+        await foreach (var trade in _baseProvider.GetTradeDataAsync())
+        {
+            yield return trade;
+        }
     }
 }

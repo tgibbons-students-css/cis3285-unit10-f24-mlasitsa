@@ -1,2 +1,4 @@
 <log><type>INFO</type><message>Reading trades from URL: http://raw.githubusercontent.com/tgibbons-css/CIS3285_Unit9_F24/refs/heads/master/SingleResponsibilityPrinciple/trades.txt</message></log> 
 <log><type>INFO</type><message>INFO: Connecting to AZURE cloud database... This may timeout the first time</message></log> 
+<log><type>INFO</type><message>Connecting to the Restful server using HTTP</message></log> 
+<log><type>INFO</type><message>INFO: Connecting to AZURE cloud database... This may timeout the first time</message></log> 

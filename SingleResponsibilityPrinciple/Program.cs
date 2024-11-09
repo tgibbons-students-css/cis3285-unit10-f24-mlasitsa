@@ -1,12 +1,15 @@
 ﻿using System;
-using SingleResponsibilityPrinciple.AdoNet;
+using System.Threading.Tasks;
+using SingleResponsibilityPrinciple;
 using SingleResponsibilityPrinciple.Contracts;
+using SingleResponsibilityPrinciple.AdoNet;
+
 
 namespace SingleResponsibilityPrinciple
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             ILogger logger = new ConsoleLogger();
 
@@ -15,22 +18,21 @@ namespace SingleResponsibilityPrinciple
 
             ITradeValidator tradeValidator = new SimpleTradeValidator(logger);
 
-            // Initialize URLTradeDataProvider (note capitalization)
+            // Initialize URLTradeDataProvider with async streaming
             ITradeDataProvider urlProvider = new URLTradeDataProvider(tradeURL, logger);
 
             // Wrap with AdjustTradeDataProvider to replace GBP with EUR
             ITradeDataProvider adjustedProvider = new AdjustTradeDataProvider(urlProvider);
 
-            // Wrap with URLAsyncProvider for asynchronous reading
-            ITradeDataProvider asyncProvider = new URLAsyncProvider(adjustedProvider);
-
             ITradeMapper tradeMapper = new SimpleTradeMapper();
             ITradeParser tradeParser = new SimpleTradeParser(tradeValidator, tradeMapper);
             ITradeStorage tradeStorage = new AdoNetTradeStorage(logger);
 
-            // Use asyncProvider in TradeProcessor to read asynchronously with currency conversion
-            TradeProcessor tradeProcessor = new TradeProcessor(asyncProvider, tradeParser, tradeStorage);
-            tradeProcessor.ProcessTrades();
+            // Initialize TradeProcessor with the adjusted provider
+            TradeProcessor tradeProcessor = new TradeProcessor(adjustedProvider, tradeParser, tradeStorage);
+
+            // Use the asynchronous ProcessTradesAsync method to process trades
+            await tradeProcessor.ProcessTradesAsync();
         }
     }
 }
